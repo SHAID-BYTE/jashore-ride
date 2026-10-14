@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#087f5b">
+<title>Jashore Ride | Local rides made simple</title>
+<meta name="description" content="A local ride booking website concept for Jashore Sadar, Bangladesh.">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--green:#087f5b;--green-dark:#066b4d;--mint:#e6fcf5;--ink:#14231d;--muted:#65756e;--line:#e1e9e5;--paper:#fff;--bg:#f4f8f6;--orange:#f08c00}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif}button,input,select{font:inherit}button{cursor:pointer}
+header{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(20px,calc((100% - 1160px)/2));position:sticky;top:0;z-index:900}
+.brand{display:flex;align-items:center;gap:10px;font-size:21px;font-weight:850;letter-spacing:-.6px}.logo{width:39px;height:39px;border-radius:13px;background:var(--green);display:grid;place-items:center;color:white;font-size:24px}.brand .ride{color:var(--green)}
+.header-right{display:flex;align-items:center;gap:12px}.city-tag{color:var(--muted);font-size:13px}.login-btn{border:1px solid var(--line);background:white;padding:10px 14px;border-radius:10px;font-weight:750;color:var(--ink)}
+.hero{background:linear-gradient(125deg,#e6fcf5 0%,#f5fbf8 55%,#fff4e6 100%);padding:52px 20px 36px}.hero-inner{max-width:1160px;margin:auto;display:grid;grid-template-columns:1.02fr .98fr;gap:35px;align-items:center}
+.eyebrow{color:var(--green);font-weight:850;font-size:12px;letter-spacing:1.2px;text-transform:uppercase}.hero h1{font-size:clamp(36px,5vw,60px);line-height:1.02;letter-spacing:-2.5px;margin:15px 0}.hero h1 em{font-style:normal;color:var(--green)}.hero-copy{color:#53675e;line-height:1.7;font-size:16px;max-width:490px}.hero-points{display:flex;gap:16px;flex-wrap:wrap;margin-top:23px;color:#315647;font-size:13px;font-weight:700}.hero-points span{display:flex;gap:7px;align-items:center}
+.hero-art{background:white;border:1px solid #dcebe3;border-radius:26px;padding:13px;box-shadow:0 18px 50px #1b503019;position:relative}.art-label{position:absolute;z-index:400;top:25px;left:25px;background:#fff;border-radius:12px;padding:10px 13px;box-shadow:0 4px 20px #0001;font-size:12px;font-weight:800}.art-label small{display:block;color:var(--muted);font-weight:500;margin-top:3px}.art-bottom{position:absolute;bottom:24px;right:24px;z-index:400;background:var(--green);color:#fff;border-radius:12px;padding:11px 14px;font-weight:800;font-size:13px;box-shadow:0 4px 20px #0002}
+main{max-width:1160px;margin:28px auto;padding:0 20px}.booking-layout{display:grid;grid-template-columns:390px 1fr;gap:22px;align-items:stretch}.card{background:var(--paper);border:1px solid var(--line);border-radius:20px;box-shadow:0 8px 28px #163c2708;overflow:hidden}.booking-card{padding:25px}.card h2{font-size:23px;margin:7px 0 6px;letter-spacing:-.7px}.muted{color:var(--muted);font-size:13px;line-height:1.55}.field-label{font-size:11px;letter-spacing:.65px;font-weight:850;color:#53675e;display:block;margin:17px 0 7px}
+.input-wrap{display:flex;align-items:center;gap:10px;border:1px solid #d8e3dd;border-radius:11px;padding:0 12px;min-width:0}.input-wrap:focus-within{border-color:var(--green);box-shadow:0 0 0 3px #087f5b12}.input-wrap input,.input-wrap select{border:0;outline:0;background:transparent;width:100%;min-width:0;padding:13px 0;color:var(--ink);font-size:14px}.point-dot{height:10px;width:10px;border-radius:50%;background:var(--green);flex-shrink:0}.point-pin{font-size:16px;color:#e8590c}
+.text-btn{border:0;background:transparent;color:var(--green);font-size:12px;font-weight:800;padding:10px 0 0}.section-title{font-weight:850;font-size:14px;margin:22px 0 10px}.vehicles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.vehicle{background:#fff;border:1px solid var(--line);border-radius:13px;padding:12px 4px;color:var(--ink)}.vehicle.active{border:2px solid var(--green);background:var(--mint);padding:11px 3px}.vehicle .emoji{font-size:26px;display:block;margin-bottom:6px}.vehicle b{display:block;font-size:12px}.vehicle small{display:block;color:var(--muted);font-size:10px;margin-top:4px}
+.options-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.options-row select{width:100%;border:1px solid #d8e3dd;border-radius:10px;background:#fff;padding:11px 9px;font-size:12px;color:var(--ink)}
+.fare{display:flex;justify-content:space-between;align-items:center;background:#f4f8f6;border-radius:12px;padding:14px;margin-top:18px}.fare b{font-size:13px}.fare small{display:block;font-size:10px;color:var(--muted);margin-top:4px}.price{font-size:23px;font-weight:900;color:var(--green)}
+.primary{width:100%;border:0;border-radius:12px;background:var(--green);color:#fff;font-weight:850;padding:15px;margin-top:14px;font-size:14px;box-shadow:0 5px 12px #087f5b18}.primary:hover{background:var(--green-dark)}.primary:disabled{opacity:.5;cursor:not-allowed}.notice{display:none;border-radius:11px;padding:12px;margin-top:12px;font-size:12px;line-height:1.6}.notice.good{display:block;background:#ebfbee;border:1px solid #b2f2bb;color:#2b6e36}.notice.warn{display:block;background:#fff4e6;border:1px solid #ffd8a8;color:#8a4b08}.fine{font-size:10px;color:var(--muted);line-height:1.55;margin:12px 0 0}
+.map-card{display:flex;flex-direction:column}.map-head{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid var(--line)}.map-head b{font-size:14px}.pill{background:var(--mint);color:var(--green);font-size:10px;font-weight:850;border-radius:30px;padding:7px 10px;letter-spacing:.5px}#map{width:100%;height:500px;background:#e8f1ed;flex:1}.map-foot{font-size:10px;line-height:1.5;color:var(--muted);padding:12px 17px}
+.how{padding:50px 20px 54px;max-width:1160px;margin:auto}.section-heading{text-align:center;margin-bottom:26px}.section-heading h2{font-size:30px;letter-spacing:-1px;margin:8px 0}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.step{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px}.step-icon{width:43px;height:43px;background:var(--mint);border-radius:13px;display:grid;place-items:center;font-size:22px}.step h3{font-size:16px;margin:15px 0 6px}.step p{font-size:13px;line-height:1.6;color:var(--muted);margin:0}
+footer{background:#12271e;color:#dcebe3;padding:30px 20px}.footer-inner{max-width:1160px;margin:auto;display:flex;justify-content:space-between;gap:20px;align-items:center}.footer-inner p{font-size:11px;line-height:1.6;color:#b1c7bb;margin:6px 0}.footer-brand{color:#fff;font-weight:850;font-size:17px}.footer-brand span{color:#63d6a8}
+.modal{position:fixed;inset:0;background:#10251fcc;z-index:2000;display:flex;align-items:center;justify-content:center;padding:18px}.modal.hidden{display:none}.modal-card{width:min(430px,100%);background:#fff;border-radius:20px;padding:27px;box-shadow:0 24px 90px #0003;max-height:90vh;overflow:auto}.modal-card h2{font-size:25px;margin:12px 0 7px}.modal-card p{font-size:13px;line-height:1.6;color:var(--muted)}.modal-input{width:100%;padding:13px;border:1px solid #d8e3dd;border-radius:11px;margin-top:7px;outline:0}.modal-input:focus{border-color:var(--green)}.phone-row{display:grid;grid-template-columns:80px 1fr;gap:8px}.phone-prefix{border:1px solid var(--line);border-radius:11px;display:grid;place-items:center;font-weight:800}.error{font-size:12px;color:#c92a2a;min-height:17px;margin-top:7px}.demo-warning{background:#fff4e6;color:#8a4b08;border-radius:10px;padding:10px;font-size:11px;line-height:1.5;margin-top:12px}.secondary{width:100%;border:1px solid var(--line);background:#fff;border-radius:11px;padding:12px;margin-top:8px;font-weight:750}.role-tag{font-size:10px;color:var(--green);background:var(--mint);padding:5px 8px;border-radius:20px;font-weight:850}
+@media(max-width:900px){.hero-inner{grid-template-columns:1fr;gap:25px}.hero{padding-top:38px}.hero-art{max-width:650px;width:100%;margin:auto}.booking-layout{grid-template-columns:1fr}.booking-card{order:1}.map-card{order:2}#map{height:390px;min-height:390px}.steps{grid-template-columns:1fr}.how{padding-top:38px}.hero h1{letter-spacing:-1.6px}}
+@media(max-width:520px){header{height:64px}.brand{font-size:18px}.logo{width:35px;height:35px}.city-tag{display:none}.hero{padding:32px 16px 27px}.hero-copy{font-size:14px}.hero-points{gap:10px;font-size:11px}.hero-art{padding:8px;border-radius:18px}.art-label{top:18px;left:18px}.art-bottom{bottom:17px;right:17px}main{padding:0 12px;margin-top:14px}.booking-card{padding:19px}.map-head{padding:15px}.footer-inner{align-items:flex-start;flex-direction:column}.hero h1{font-size:39px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">↗</div><div>Jashore <span class="ride">Ride</span></div></div>
+  <div class="header-right"><div class="city-tag">Made for Jashore Sadar</div><button class="login-btn" id="openLogin">Sign in / OTP</button></div>
+</header>
+<section class="hero">
+ <div class="hero-inner">
+  <div>
+   <div class="eyebrow">Your local ride, made simple</div>
+   <h1>Jashore, let's<br><em>get moving.</em></h1>
+   <p class="hero-copy">A simple way to plan a local ride around Jashore Sadar. Choose your pickup, enter your destination, and prepare your ride request.</p>
+   <div class="hero-points"><span>✓ Local-first concept</span><span>✓ Easy booking flow</span><span>✓ Built for mobile</span></div>
+  </div>
+  <div class="hero-art">
+   <div class="art-label">Explore Jashore<small>Set a pickup and destination</small></div>
+   <div id="heroMap" style="height:260px;border-radius:17px;overflow:hidden"></div>
+   <div class="art-bottom">Your city. Your ride. ↗</div>
+  </div>
+ </div>
+</section>
+<main id="booking">
+ <div class="booking-layout">
+  <section class="card booking-card">
+   <div class="eyebrow">Book a ride</div>
+   <h2>Where to?</h2>
+   <p class="muted">Enter your trip details to prepare a request.</p>
+   <label class="field-label" for="pickup">PICKUP LOCATION</label>
+   <div class="input-wrap"><span class="point-dot"></span><input id="pickup" value="Jashore Sadar" placeholder="Enter pickup location"></div>
+   <button class="text-btn" id="locate">◎ Use my current location</button>
+   <label class="field-label" for="destination">DROP-OFF LOCATION</label>
+   <div class="input-wrap"><span class="point-pin">●</span><input id="destination" placeholder="Where are you going?"></div>
+   <div class="section-title">Choose your ride</div>
+   <div class="vehicles">
+    <button class="vehicle active" data-type="Easybike" data-rate="18" data-base="30"><span class="emoji">🛺</span><b>Easybike</b><small>City ride</small></button>
+    <button class="vehicle" data-type="Motorbike" data-rate="15" data-base="35"><span class="emoji">🏍️</span><b>Motorbike</b><small>Quick ride</small></button>
+    <button class="vehicle" data-type="Car" data-rate="35" data-base="80"><span class="emoji">🚗</span><b>Car</b><small>More comfort</small></button>
+   </div>
+   <div class="section-title">When do you need a ride?</div>
+   <div class="options-row"><select id="rideTime" aria-label="Ride time"><option value="now">Ride now</option><option value="scheduled">Schedule for later</option></select><select id="payment" aria-label="Payment method"><option value="Cash">Cash payment</option><option value="Mobile financial service (future)" disabled>Mobile payment (coming later)</option></select></div>
+   <div id="scheduleWrap" style="display:none"><label class="field-label" for="scheduleTime">PREFERRED DATE & TIME</label><input class="modal-input" style="margin:0" id="scheduleTime" type="datetime-local"></div>
+   <div class="fare"><div><b>Estimated fare</b><small id="fareNote">Sample estimate · approx. 3 km</small></div><div class="price" id="fare">৳ 84</div></div>
+   <button class="primary" id="book">Continue to booking</button>
+   <div class="notice" id="bookingNotice" role="status"></div>
+   <p class="fine">This is a free early-stage prototype. It does not yet dispatch real drivers, confirm rides, or process payments. Sample fares are illustrative only.</p>
+  </section>
+  <section class="card map-card">
+   <div class="map-head"><b>Explore Jashore</b><span class="pill">JASHORE SADAR</span></div>
+   <div id="map"></div>
+   <div class="map-foot">Map data © OpenStreetMap contributors. Map markers are illustrative and are not verified pickup points or driver locations.</div>
+  </section>
+ </div>
+</main>
+<section class="how">
+ <div class="section-heading"><div class="eyebrow">Simple by design</div><h2>How Jashore Ride works</h2><p class="muted">A simple booking experience, designed around local travel.</p></div>
+ <div class="steps">
+  <article class="step"><div class="step-icon">📍</div><h3>1. Choose your locations</h3><p>Set where your journey starts and where you want to go.</p></article>
+  <article class="step"><div class="step-icon">🛺</div><h3>2. Select a ride</h3><p>Choose an available vehicle type and review the indicative fare.</p></article>
+  <article class="step"><div class="step-icon">🤝</div><h3>3. Confirm with a driver</h3><p>In the future live service, a verified local driver will receive your request. Driver dispatch is not active in this prototype.</p></article>
+ </div>
+</section>
+<footer><div class="footer-inner"><div><div class="footer-brand">Jashore <span>Ride</span></div><p>Local ride booking concept for Jashore, Bangladesh.</p></div><div><span class="role-tag">EARLY PROTOTYPE</span><p>Not an active transport service. No real rides are currently dispatched.</p></div></div></footer>
+
+<div class="modal" id="authModal">
+ <div class="modal-card">
+  <div class="brand"><div class="logo">↗</div><div>Jashore <span class="ride">Ride</span></div></div>
+  <div class="eyebrow">Phone verification</div><h2 id="authTitle">Sign in with your phone</h2>
+  <p id="authDescription">Enter your Bangladesh mobile number to continue.</p>
+  <div id="phoneStep"><label class="field-label" for="phoneNumber">MOBILE NUMBER</label><div class="phone-row"><div class="phone-prefix">+880</div><input class="modal-input" id="phoneNumber" type="tel" inputmode="numeric" placeholder="1XXXXXXXXX" maxlength="10"></div><button class="primary" id="sendOtp">Continue</button></div>
+  <div id="otpStep" style="display:none"><label class="field-label" for="otpCode">6-DIGIT OTP</label><input class="modal-input" id="otpCode" inputmode="numeric" autocomplete="one-time-code" placeholder="Enter OTP" maxlength="6"><button class="primary" id="verifyOtp">Verify and continue</button><button class="secondary" id="changePhone">Change phone number</button></div>
+  <div class="error" id="authError"></div>
+  <div class="demo-warning"><b>Prototype notice:</b> This is a simulated OTP flow. No SMS is sent and this does not verify a real phone number. Demo code: <b>123456</b>. Real SMS authentication must be connected before launch.</div>
+  <button class="secondary" id="closeLogin">Close</button>
+ </div>
+</div>
+<div class="modal hidden" id="confirmModal">
+ <div class="modal-card"><div class="eyebrow">Review your request</div><h2>Ready to request?</h2><p>Review your ride details. This demo saves the request only in this browser; no driver will receive it.</p><div id="reviewDetails" style="background:#f4f8f6;border-radius:12px;padding:14px;font-size:13px;line-height:1.9"></div><button class="primary" id="confirmBooking">Save demo request</button><button class="secondary" id="cancelBooking">Go back</button><div class="error" id="confirmError"></div></div>
+</div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+const center=[23.1667,89.2167];
+const baseMap={zoom:13,center:center};
+const tile='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const map=L.map('map').setView(center,13);
+L.tileLayer(tile,{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(map);
+const heroMap=L.map('heroMap',{zoomControl:false,dragging:false,scrollWheelZoom:false,doubleClickZoom:false,boxZoom:false,keyboard:false,touchZoom:false}).setView(center,12);
+L.tileLayer(tile,{maxZoom:19,attribution:'&copy; OpenStreetMap'}).addTo(heroMap);
+const samplePlaces=[
+ {p:[23.1667,89.2167],n:'Jashore Sadar',d:'Illustrative map center'},
+ {p:[23.1695,89.2080],n:'Town area',d:'Illustrative area marker'},
+ {p:[23.1730,89.2240],n:'Nearby area',d:'Illustrative area marker'},
+ {p:[23.1580,89.2250],n:'Local area',d:'Illustrative area marker'}
+];
+samplePlaces.forEach(x=>{L.marker(x.p).addTo(map).bindPopup('<b>'+x.n+'</b><br>'+x.d);L.circleMarker(x.p,{radius:4,color:'#087f5b',fillOpacity:.8}).addTo(heroMap)});
+setTimeout(()=>{map.invalidateSize();heroMap.invalidateSize()},250);
+let selected={type:'Easybike',rate:18,base:30};
+let verifiedDemoPhone='';
+document.querySelectorAll('.vehicle').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.vehicle').forEach(b=>b.classList.remove('active'));btn.classList.add('active');selected={type:btn.dataset.type,rate:+btn.dataset.rate,base:+btn.dataset.base};updateFare()}));
+function updateFare(){const km=3;document.getElementById('fare').textContent='৳ '+Math.round(selected.base+selected.rate*km);document.getElementById('fareNote').textContent='Sample estimate · approx. '+km+' km';}
+document.getElementById('rideTime').addEventListener('change',e=>{document.getElementById('scheduleWrap').style.display=e.target.value==='scheduled'?'block':'none'});
+document.getElementById('locate').addEventListener('click',()=>{if(!navigator.geolocation){alert('Location is not supported by this browser.');return}navigator.geolocation.getCurrentPosition(pos=>{const p=[pos.coords.latitude,pos.coords.longitude];map.setView(p,15);L.marker(p).addTo(map).bindPopup('<b>Your current location</b>').openPopup();document.getElementById('pickup').value='My current location';},()=>alert('Could not access your location. Allow location permission and try again.'),{enableHighAccuracy:true,timeout:10000})});
+const authModal=document.getElementById('authModal'),authError=document.getElementById('authError');
+document.getElementById('openLogin').addEventListener('click',()=>authModal.classList.remove('hidden'));
+document.getElementById('closeLogin').addEventListener('click',()=>authModal.classList.add('hidden'));
+document.getElementById('sendOtp').addEventListener('click',()=>{const raw=document.getElementById('phoneNumber').value.replace(/\D/g,'');if(!/^1\d{9}$/.test(raw)){authError.textContent='Enter a valid Bangladesh mobile number (10 digits after +880).';return}verifiedDemoPhone='+880'+raw;document.getElementById('phoneStep').style.display='none';document.getElementById('otpStep').style.display='block';document.getElementById('authTitle').textContent='Enter your OTP';document.getElementById('authDescription').textContent='No SMS is sent in this prototype. Enter demo code 123456.';authError.textContent=''});
+document.getElementById('verifyOtp').addEventListener('click',()=>{if(document.getElementById('otpCode').value.trim()!=='123456'){authError.textContent='Incorrect demo code. Enter 123456.';return}authModal.classList.add('hidden');document.getElementById('openLogin').textContent='Demo: '+verifiedDemoPhone.slice(-4);document.getElementById('openLogin').title='Demo sign-in only';document.getElementById('bookingNotice').className='notice good';document.getElementById('bookingNotice').textContent='Demo sign-in completed for '+verifiedDemoPhone+'. Real phone verification is not active.'});
+document.getElementById('changePhone').addEventListener('click',()=>{document.getElementById('otpStep').style.display='none';document.getElementById('phoneStep').style.display='block';document.getElementById('authTitle').textContent='Sign in with your phone';document.getElementById('authDescription').textContent='Enter your Bangladesh mobile number to continue.';authError.textContent=''});
+document.getElementById('book').addEventListener('click',()=>{const pickup=document.getElementById('pickup').value.trim(),destination=document.getElementById('destination').value.trim(),rideTime=document.getElementById('rideTime').value,schedule=document.getElementById('scheduleTime').value;if(!pickup||!destination){showNotice('Please enter both pickup and drop-off locations.','warn');return}if(rideTime==='scheduled'&&!schedule){showNotice('Please choose a preferred date and time.','warn');return}const details={pickup,destination,vehicle:selected.type,fare:document.getElementById('fare').textContent,payment:document.getElementById('payment').value,rideTime:rideTime==='now'?'Ride now':'Scheduled: '+new Date(schedule).toLocaleString(),phone:verifiedDemoPhone||'Not signed in'};document.getElementById('reviewDetails').innerHTML='<b>Pickup:</b> '+escapeHtml(details.pickup)+'<br><b>Drop-off:</b> '+escapeHtml(details.destination)+'<br><b>Vehicle:</b> '+escapeHtml(details.vehicle)+'<br><b>Time:</b> '+escapeHtml(details.rideTime)+'<br><b>Payment:</b> Cash<br><b>Indicative fare:</b> '+escapeHtml(details.fare)+'<br><b>Phone:</b> '+escapeHtml(details.phone);document.getElementById('confirmError').textContent='';document.getElementById('confirmModal').classList.remove('hidden');});
+document.getElementById('cancelBooking').addEventListener('click',()=>document.getElementById('confirmModal').classList.add('hidden'));
+document.getElementById('confirmBooking').addEventListener('click',()=>{const pickup=document.getElementById('pickup').value.trim(),destination=document.getElementById('destination').value.trim();const details={id:'JR-DEMO-'+Date.now().toString().slice(-6),pickup,destination,vehicle:selected.type,fare:document.getElementById('fare').textContent,createdAt:new Date().toISOString(),status:'Demo only'};try{const arr=JSON.parse(localStorage.getItem('jashoreRideDemoBookings')||'[]');arr.push(details);localStorage.setItem('jashoreRideDemoBookings',JSON.stringify(arr))}catch(e){}document.getElementById('confirmModal').classList.add('hidden');showNotice('Demo request saved in this browser. Reference: '+details.id+'. This is not a real booking: no driver was notified and no ride is confirmed.','good');});
+function showNotice(msg,type){const n=document.getElementById('bookingNotice');n.className='notice '+type;n.textContent=msg}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+updateFare();
+</script>
+</body>
+</html>
