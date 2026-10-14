@@ -1,0 +1,5 @@
+// Jashore Ride - Supabase Configuration
+// Public browser configuration only.
+
+const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
+const SUPABASE_PUBLISHABLE_KEY = "YOUR_SUPABASE_PUBLISHABLE_KEY";
